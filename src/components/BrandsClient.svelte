@@ -140,8 +140,8 @@
 
   <!-- Add Brand Form Modal -->
   {#if showAddBrandForm}
-    <div class="fixed inset-0 bg-gray-500 bg-opacity-75 flex items-center justify-center p-4 z-50">
-      <div class="bg-white rounded-lg max-w-md w-full">
+    <div class="fixed inset-0 bg-gray-900/50 backdrop-blur-xs flex items-center justify-center p-4 z-50">
+      <div class="bg-white/95 backdrop-blur-md rounded-lg max-w-md w-full shadow-2xl border border-gray-200">
         <AddBrandForm on:submit={handleAddBrand} />
         <div class="p-4 border-t">
           <Button
@@ -158,8 +158,8 @@
 
   <!-- Add Model Form Modal -->
   {#if showAddModelForm && selectedBrandForModel}
-    <div class="fixed inset-0 bg-gray-500 bg-opacity-75 flex items-center justify-center p-4 z-50">
-      <div class="bg-white rounded-lg max-w-md w-full">
+    <div class="fixed inset-0 bg-gray-900/50 backdrop-blur-xs flex items-center justify-center p-4 z-50">
+      <div class="bg-white/95 backdrop-blur-md rounded-lg max-w-md w-full shadow-2xl border border-gray-200">
         <AddModelForm
           brandId={selectedBrandForModel.id}
           brandName={selectedBrandForModel.name}

@@ -231,8 +231,8 @@
 
   <!-- Edit Model Form Modal -->
   {#if showEditForm && selectedModelForEdit}
-    <div class="fixed inset-0 bg-gray-500 bg-opacity-75 flex items-center justify-center p-4 z-50">
-      <div class="bg-white rounded-lg max-w-md w-full">
+    <div class="fixed inset-0 bg-blue-500/30 backdrop-blur-xs flex items-center justify-center p-4 z-50">
+      <div class="bg-white/80 backdrop-blur-md rounded-lg max-w-md w-full shadow-2xl border border-gray-200">
         <EditModelForm
           model={selectedModelForEdit}
           brandName={getBrandName(selectedModelForEdit.brand_id)}
