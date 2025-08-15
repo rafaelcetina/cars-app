@@ -1,21 +1,21 @@
 ---
 import Layout from '../layouts/Layout.astro';
-import BrandsClient from '../components/BrandsClient.svelte';
+import ModelsClient from '../components/ModelsClient.svelte';
 ---
 
-<Layout title="Brands - Cars App">
+<Layout title="Models - Cars App">
   <div class="px-4 sm:px-6 lg:px-8">
     <div class="sm:flex sm:items-center">
       <div class="sm:flex-auto">
-        <h1 class="text-3xl font-bold tracking-tight text-gray-900 dark:text-white">Brands</h1>
+        <h1 class="text-3xl font-bold tracking-tight text-gray-900 dark:text-white">Models</h1>
         <p class="mt-2 text-sm text-gray-700 dark:text-gray-300">
-          Manage car brands and their models. Add new brands or view existing ones.
+          View and manage car models. Filter by price range or search for specific models.
         </p>
       </div>
     </div>
     
     <div class="mt-8">
-      <BrandsClient client:load />
+      <ModelsClient client:only />
     </div>
   </div>
 </Layout>
