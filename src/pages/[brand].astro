@@ -1,0 +1,98 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { api } from '../lib/api';
+import type { Brand, Model } from '../types/api';
+
+export const prerender = true;
+
+export async function getStaticPaths() {
+  try {
+    const brands = await api.getBrands();
+    return brands.map(brand => ({
+      params: { brand: brand.name.toLowerCase().replace(/\s+/g, '-') },
+      props: { brand },
+    }));
+  } catch (error) {
+    console.error('Error fetching brands for static paths:', error);
+    return [];
+  }
+}
+
+const { brand } = Astro.props;
+let models: Model[] = [];
+
+try {
+  models = await api.getModelsByBrand(brand.id);
+} catch (error) {
+  console.error('Error fetching models:', error);
+}
+---
+
+<Layout title={`${brand.name} - Cars App`}>
+  <div class="px-4 sm:px-6 lg:px-8">
+    <!-- Breadcrumb -->
+    <nav class="flex mb-6" aria-label="Breadcrumb">
+      <ol class="inline-flex items-center space-x-1 md:space-x-3">
+        <li class="inline-flex items-center">
+          <a
+            href="/"
+            class="text-gray-500 hover:text-gray-700 dark:text-gray-300 dark:hover:text-white text-sm font-medium"
+          >
+            Brands
+          </a>
+        </li>
+        <li>
+          <div class="flex items-center">
+            <svg class="w-4 h-4 text-gray-400 mx-1" fill="currentColor" viewBox="0 0 20 20">
+              <path
+                fill-rule="evenodd"
+                d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
+                clip-rule="evenodd"></path>
+            </svg>
+            <span class="text-gray-700 dark:text-gray-300 text-sm font-medium">{brand.name}</span>
+          </div>
+        </li>
+      </ol>
+    </nav>
+
+    <div class="sm:flex sm:items-center">
+      <div class="sm:flex-auto">
+        <h1 class="text-3xl font-bold tracking-tight text-gray-900 dark:text-white">
+          {brand.name}
+        </h1>
+        <p class="mt-2 text-sm text-gray-700 dark:text-gray-300">
+          View all models from {brand.name}
+        </p>
+      </div>
+    </div>
+
+    <div class="mt-8">
+      {
+        models.length > 0 ? (
+          <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {models.map(model => (
+              <a 
+                href={`/${brand.name.toLowerCase().replace(/[^a-z0-9]/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, '')}/${model.name.toLowerCase().replace(/[^a-z0-9]/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, '')}`}
+                class="block bg-white dark:bg-gray-800 shadow rounded-lg p-6 hover:shadow-lg transition-shadow duration-200 card"
+              >
+                <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+                  {model.name}
+                </h3>
+                <p class="text-sm text-gray-600 dark:text-gray-400">
+                  Average Price: ${model.average_price?.toLocaleString() || 'N/A'}
+                </p>
+                <p class="text-xs text-blue-600 dark:text-blue-400 mt-2">
+                  Click to view details →
+                </p>
+              </a>
+            ))}
+          </div>
+        ) : (
+          <div class="text-center py-12">
+            <p class="text-gray-500 dark:text-gray-400">No models found for {brand.name}</p>
+          </div>
+        )
+      }
+    </div>
+  </div>
+</Layout>

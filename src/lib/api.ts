@@ -5,6 +5,7 @@ import type {
   CreateModelRequest,
   UpdateModelRequest,
   ModelsFilter,
+  RecommendationResponse,
 } from '../types/api';
 
 const API_BASE_URL = 'https://cars-api.rafaelcetina.com';
@@ -80,5 +81,44 @@ export const api = {
     const url = `${API_BASE_URL}/models${params.toString() ? `?${params.toString()}` : ''}`;
     const response = await fetch(url);
     return handleResponse<Model[]>(response);
+  },
+
+  // Recommendations
+  async generateBrandRecommendation(brandId: number): Promise<RecommendationResponse> {
+    const response = await fetch(`${API_BASE_URL}/api/brands/${brandId}/recommendation`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+    return handleResponse<RecommendationResponse>(response);
+  },
+
+  async generateModelRecommendation(
+    brandId: number,
+    modelId: number
+  ): Promise<RecommendationResponse> {
+    const response = await fetch(
+      `${API_BASE_URL}/api/brands/${brandId}/models/${modelId}/recommendation`,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      }
+    );
+    return handleResponse<RecommendationResponse>(response);
+  },
+
+  async getBrandRecommendations(brandId: number): Promise<RecommendationResponse> {
+    const response = await fetch(`${API_BASE_URL}/api/brands/${brandId}/recommendations`);
+    return handleResponse<RecommendationResponse>(response);
+  },
+
+  async getModelRecommendation(brandId: number, modelId: number): Promise<RecommendationResponse> {
+    const response = await fetch(
+      `${API_BASE_URL}/api/brands/${brandId}/models/${modelId}/recommendation`
+    );
+    return handleResponse<RecommendationResponse>(response);
   },
 };

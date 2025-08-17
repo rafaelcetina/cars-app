@@ -1,21 +1,90 @@
 ---
 import Layout from '../layouts/Layout.astro';
-import ModelsClient from '../components/ModelsClient.svelte';
+import { api } from '../lib/api';
+import type { Model, Brand } from '../types/api';
+
+let models: Model[] = [];
+let brands: Brand[] = [];
+
+try {
+  [models, brands] = await Promise.all([api.getModels(), api.getBrands()]);
+} catch (error) {
+  console.error('Error fetching data:', error);
+}
+
+// Create a map of brand IDs to brand names for easy lookup
+const brandMap = new Map(brands.map(brand => [brand.id, brand]));
 ---
 
-<Layout title="Models - Cars App">
+<Layout title="All Models - Cars App">
   <div class="px-4 sm:px-6 lg:px-8">
+    <!-- Breadcrumb -->
+    <nav class="flex mb-6" aria-label="Breadcrumb">
+      <ol class="inline-flex items-center space-x-1 md:space-x-3">
+        <li class="inline-flex items-center">
+          <a
+            href="/"
+            class="text-gray-500 hover:text-gray-700 dark:text-gray-300 dark:hover:text-white text-sm font-medium"
+          >
+            Brands
+          </a>
+        </li>
+        <li>
+          <div class="flex items-center">
+            <svg class="w-4 h-4 text-gray-400 mx-1" fill="currentColor" viewBox="0 0 20 20">
+              <path
+                fill-rule="evenodd"
+                d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
+                clip-rule="evenodd"></path>
+            </svg>
+            <span class="text-gray-700 dark:text-gray-300 text-sm font-medium">All Models</span>
+          </div>
+        </li>
+      </ol>
+    </nav>
+
     <div class="sm:flex sm:items-center">
       <div class="sm:flex-auto">
-        <h1 class="text-3xl font-bold tracking-tight text-gray-900 dark:text-white">Models</h1>
+        <h1 class="text-3xl font-bold tracking-tight text-gray-900 dark:text-white">All Models</h1>
         <p class="mt-2 text-sm text-gray-700 dark:text-gray-300">
-          View and manage car models. Filter by price range or search for specific models.
+          View all car models across all brands. Click on a brand name to view only that brand's
+          models.
         </p>
       </div>
     </div>
-    
+
     <div class="mt-8">
-      <ModelsClient client:only />
+      {
+        models.length > 0 ? (
+          <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                         {models.map(model => {
+               const brand = brandMap.get(model.brand_id);
+               return (
+                                   <a 
+                    href={`/${brand?.name.toLowerCase().replace(/[^a-z0-9]/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, '')}/${model.name.toLowerCase().replace(/[^a-z0-9]/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, '')}`}
+                    class="block bg-white dark:bg-gray-800 shadow rounded-lg p-6 hover:shadow-lg transition-shadow duration-200"
+                  >
+                   <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+                     {model.name}
+                   </h3>
+                   <p class="text-sm text-gray-600 dark:text-gray-400 mb-2">
+                     Average Price: ${model.average_price?.toLocaleString() || 'N/A'}
+                   </p>
+                   {brand && (
+                     <span class="text-sm text-blue-600 dark:text-blue-400">
+                       {brand.name} →
+                     </span>
+                   )}
+                 </a>
+               );
+             })}
+          </div>
+        ) : (
+          <div class="text-center py-12">
+            <p class="text-gray-500 dark:text-gray-400">No models found</p>
+          </div>
+        )
+      }
     </div>
   </div>
 </Layout>

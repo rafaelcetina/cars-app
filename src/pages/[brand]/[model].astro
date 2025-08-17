@@ -1,0 +1,165 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { api } from '../../lib/api';
+import type { Brand, Model } from '../../types/api';
+import DynamicContent from '../../components/DynamicContent.svelte';
+
+export const prerender = true;
+
+export async function getStaticPaths() {
+  try {
+    const brands = await api.getBrands();
+    const paths = [];
+
+    for (const brand of brands) {
+      try {
+        const models = await api.getModelsByBrand(brand.id);
+        for (const model of models) {
+          paths.push({
+            params: { 
+              brand: brand.name.toLowerCase().replace(/[^a-z0-9]/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, ''),
+              model: model.name.toLowerCase().replace(/[^a-z0-9]/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, '')
+            },
+            props: { brand, model }
+          });
+        }
+      } catch (error) {
+        console.error(`Error fetching models for brand ${brand.name}:`, error);
+      }
+    }
+
+    return paths;
+  } catch (error) {
+    console.error('Error generating static paths for models:', error);
+    return [];
+  }
+}
+
+const { brand, model } = Astro.props;
+---
+
+<Layout title={`${model.name} - ${brand.name} - Cars App`}>
+  <div class="px-4 sm:px-6 lg:px-8">
+    <!-- Breadcrumb -->
+    <nav class="flex mb-6" aria-label="Breadcrumb">
+      <ol class="inline-flex items-center space-x-1 md:space-x-3">
+        <li class="inline-flex items-center">
+          <a href="/" class="text-gray-500 hover:text-gray-700 dark:text-gray-300 dark:hover:text-white text-sm font-medium">
+            Brands
+          </a>
+        </li>
+        <li>
+          <div class="flex items-center">
+            <svg class="w-4 h-4 text-gray-400 mx-1" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path>
+            </svg>
+            <a 
+              href={`/${brand.name.toLowerCase().replace(/[^a-z0-9]/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, '')}`}
+              class="text-gray-500 hover:text-gray-700 dark:text-gray-300 dark:hover:text-white text-sm font-medium"
+            >
+              {brand.name}
+            </a>
+          </div>
+        </li>
+        <li>
+          <div class="flex items-center">
+            <svg class="w-4 h-4 text-gray-400 mx-1" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path>
+            </svg>
+            <span class="text-gray-700 dark:text-gray-300 text-sm font-medium">{model.name}</span>
+          </div>
+        </li>
+      </ol>
+    </nav>
+
+    <div class="sm:flex sm:items-center">
+      <div class="sm:flex-auto">
+        <h1 class="text-3xl font-bold tracking-tight text-gray-900 dark:text-white">
+          {brand.name} {model.name}
+        </h1>
+        <p class="mt-2 text-sm text-gray-700 dark:text-gray-300">
+          Detailed information about the {model.name} model from {brand.name}
+        </p>
+      </div>
+    </div>
+    
+    <div class="mt-8">
+      <div class="bg-white dark:bg-gray-800 shadow rounded-lg p-6 card">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <!-- Model Information -->
+          <div>
+            <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-4">Model Information</h2>
+            <div class="space-y-3">
+              <div class="flex justify-between">
+                <span class="text-gray-600 dark:text-gray-400">Brand:</span>
+                <span class="font-medium text-gray-900 dark:text-gray-800">{brand.name}</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-gray-600 dark:text-gray-400">Model:</span>
+                <span class="font-medium text-gray-900 dark:text-gray-800">{model.name}</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-gray-600 dark:text-gray-400">Average Price:</span>
+                <span class="font-medium text-gray-900 dark:text-gray-800">
+                  ${model.average_price?.toLocaleString() || 'N/A'}
+                </span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-gray-600 dark:text-gray-400">Model ID:</span>
+                <span class="font-medium text-gray-900 dark:text-gray-800">{model.id}</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Brand Information -->
+          <div>
+            <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-4">Brand Information</h2>
+            <div class="space-y-3">
+              <div class="flex justify-between">
+                <span class="text-gray-600 dark:text-gray-400">Brand Name:</span>
+                <span class="font-medium text-gray-900 dark:text-gray-800">{brand.name}</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-gray-600 dark:text-gray-400">Brand ID:</span>
+                <span class="font-medium text-gray-900 dark:text-gray-800">{brand.id}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="mt-8 pt-6 border-t border-gray-200 dark:border-gray-700">
+          <div class="flex space-x-4">
+            <a 
+              href={`/${brand.name.toLowerCase().replace(/[^a-z0-9]/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, '')}`}
+              class="inline-flex items-center px-4 py-2 border border-gray-300 dark:border-gray-600 shadow-sm text-sm font-medium rounded-md text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors button"
+            >
+              ← Back to {brand.name} Models
+            </a>
+            <a 
+              href="/models"
+              class="inline-flex items-center px-4 py-2 border border-gray-300 dark:border-gray-600 shadow-sm text-sm font-medium rounded-md text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors button"
+            >
+              View All Models
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Content Section -->
+    <div class="mt-8">
+      <div class="bg-white dark:bg-gray-800 shadow rounded-lg p-6 card">
+        <div class="flex items-center justify-between mb-6">
+          <h2 class="text-xl font-semibold text-gray-900 dark:text-white">Detailed Information</h2>
+        </div>
+
+        <DynamicContent 
+          client:load 
+          brand={brand.name} 
+          model={model.name} 
+        />
+      </div>
+    </div>
+  </div>
+</Layout>

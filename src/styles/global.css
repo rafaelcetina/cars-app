@@ -92,13 +92,13 @@
   
   /* Force card styles */
 
-  html:not(.dark) .card, html:not(.dark)  {
+  html:not(.dark) .card, html:not(.dark) .button, html:not(.dark)  {
     background-color: #ffffff !important;
     border-color: #e5e7eb !important;
     color: #111827 !important;
   }
   
-  html.dark .card, html.dark  {
+  html.dark .card, html.dark .button, html.dark{
     background-color: #1f2937 !important;
     border-color: #374151 !important;
     color: #f9fafb !important;

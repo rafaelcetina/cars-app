@@ -3,6 +3,7 @@
   "type": "module",
   "version": "0.0.1",
   "scripts": {
+    "generate:car": "node scripts/generate-car-content.js",
     "dev": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
@@ -13,8 +14,11 @@
     "format:check": "prettier --check ."
   },
   "dependencies": {
+    "@ai-sdk/openai": "^2.0.15",
+    "@astrojs/node": "^9.4.2",
     "@astrojs/svelte": "^7.1.0",
     "@tailwindcss/vite": "^4.1.12",
+    "ai": "^5.0.15",
     "astro": "^5.13.2",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
