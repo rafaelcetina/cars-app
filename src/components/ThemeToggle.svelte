@@ -31,6 +31,7 @@
     
     // Force the theme to override system preferences
     root.style.colorScheme = newTheme;
+    console.log("🚀 ~ applyTheme ~ newTheme:", newTheme)
   }
 </script>
 
