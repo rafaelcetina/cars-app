@@ -9,8 +9,8 @@ FROM node:lts-alpine AS runtime
 WORKDIR /app
 COPY --from=node-builder /app/dist ./dist
 COPY --from=node-builder /app/package.json ./package.json
+COPY --from=node-builder /app/node_modules ./node_modules
 ENV HOST=0.0.0.0
 ENV PORT=4321
 EXPOSE 4321
-RUN npm install
 CMD node ./dist/server/entry.mjs
