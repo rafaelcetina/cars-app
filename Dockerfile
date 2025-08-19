@@ -2,6 +2,7 @@
 FROM node:lts-alpine AS node-builder
 WORKDIR /app
 COPY . .
+RUN npm install -g pnpm
 RUN pnpm install
 RUN pnpm run build
 
@@ -17,6 +18,6 @@ WORKDIR /app
 COPY --from=node-builder /app/dist ./dist
 COPY --from=node-builder /app/package.json ./package.json
 ENV HOST=0.0.0.0
-ENV PORT=4321
-EXPOSE 4321
+ENV PORT=8002
+EXPOSE 8002
 CMD node ./dist/server/entry.mjs
