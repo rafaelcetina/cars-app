@@ -2,9 +2,8 @@
 FROM node:lts-alpine AS node-builder
 WORKDIR /app
 COPY . .
-RUN npm install -g pnpm
-RUN pnpm install
-RUN pnpm run build
+RUN npm install
+RUN npm run build
 
 
 # Stage 2: Serve the static files with Nginx
