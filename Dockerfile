@@ -5,7 +5,7 @@ COPY . .
 RUN npm install
 RUN npm run build
 
-FROM node:lts-alpine AS runtime
+#FROM node:lts-alpine AS runtime
 WORKDIR /app
 COPY --from=node-builder /app/dist ./dist
 COPY --from=node-builder /app/package.json ./package.json
