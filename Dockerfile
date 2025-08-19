@@ -7,8 +7,8 @@ RUN npm run build
 
 #FROM node:lts-alpine AS runtime
 WORKDIR /app
-COPY --from=node-builder /app/dist ./dist
-COPY --from=node-builder /app/package.json ./package.json
+COPY /app/dist ./dist
+COPY /app/package.json ./package.json
 ENV HOST=0.0.0.0
 ENV PORT=4321
 EXPOSE 4321
